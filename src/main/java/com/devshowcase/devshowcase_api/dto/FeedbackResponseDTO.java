@@ -1,29 +1,28 @@
-package com.devshowcase.devshowcase_api.entity;
+package com.devshowcase.devshowcase_api.dto;
 
-import jakarta.persistence.*;
+public class FeedbackResponseDTO {
 
-@Entity
-@Table(name = "feedbacks")
-public class Feedback {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
     private String author;
-
-    @Column(nullable = false)
     private Integer rating;
-
-    @Column(nullable = false, length = 1000)
     private String comment;
+    private Long projectId;
 
-    @ManyToOne
-    @JoinColumn(name = "project_id", nullable = false)
-    private Project project;
+    public FeedbackResponseDTO() {
+    }
 
-    public Feedback() {
+    public FeedbackResponseDTO(
+            Long id,
+            String author,
+            Integer rating,
+            String comment,
+            Long projectId) {
+
+        this.id = id;
+        this.author = author;
+        this.rating = rating;
+        this.comment = comment;
+        this.projectId = projectId;
     }
 
     public Long getId() {
@@ -58,11 +57,11 @@ public class Feedback {
         this.comment = comment;
     }
 
-    public Project getProject() {
-        return project;
+    public Long getProjectId() {
+        return projectId;
     }
 
-    public void setProject(Project project) {
-        this.project = project;
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
     }
 }

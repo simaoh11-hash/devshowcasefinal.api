@@ -10,6 +10,8 @@ public class ProjectResponseDTO {
     private String url;
     private Long profileId;
     private List<Long> technologyIds;
+    private Double averageRating;
+    private Integer upvotes;
 
     public ProjectResponseDTO() {
     }
@@ -20,7 +22,9 @@ public class ProjectResponseDTO {
             String description,
             String url,
             Long profileId,
-            List<Long> technologyIds) {
+            List<Long> technologyIds,
+            Double averageRating,
+            Integer upvotes) {
 
         this.id = id;
         this.title = title;
@@ -28,6 +32,8 @@ public class ProjectResponseDTO {
         this.url = url;
         this.profileId = profileId;
         this.technologyIds = technologyIds;
+        this.averageRating = averageRating;
+        this.upvotes = upvotes;
     }
 
     public Long getId() {
@@ -76,5 +82,21 @@ public class ProjectResponseDTO {
 
     public void setTechnologyIds(List<Long> technologyIds) {
         this.technologyIds = technologyIds;
+    }
+
+    public Double getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(Double averageRating) {
+        this.averageRating = averageRating;
+    }
+
+    public Integer getUpvotes() {
+        return upvotes;
+    }
+
+    public void setUpvotes(Integer upvotes) {
+        this.upvotes = upvotes;
     }
 }

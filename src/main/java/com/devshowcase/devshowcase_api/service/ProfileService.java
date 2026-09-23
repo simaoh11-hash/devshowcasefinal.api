@@ -6,6 +6,8 @@ import com.devshowcase.devshowcase_api.entity.Profile;
 import com.devshowcase.devshowcase_api.repository.ProfileRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ProfileService {
 
@@ -44,5 +46,18 @@ public class ProfileService {
                 profile.getEmail(),
                 profile.getBio()
         );
+    }
+
+    public List<ProfileResponseDTO> findAll() {
+
+        return profileRepository.findAll()
+                .stream()
+                .map(profile -> new ProfileResponseDTO(
+                        profile.getId(),
+                        profile.getName(),
+                        profile.getEmail(),
+                        profile.getBio()
+                ))
+                .toList();
     }
 }

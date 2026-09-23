@@ -5,9 +5,13 @@ import com.devshowcase.devshowcase_api.dto.ProjectResponseDTO;
 import com.devshowcase.devshowcase_api.entity.Profile;
 import com.devshowcase.devshowcase_api.entity.Project;
 import com.devshowcase.devshowcase_api.entity.Technology;
+import com.devshowcase.devshowcase_api.exception.ResourceNotFoundException;
 import com.devshowcase.devshowcase_api.repository.ProfileRepository;
 import com.devshowcase.devshowcase_api.repository.ProjectRepository;
 import com.devshowcase.devshowcase_api.repository.TechnologyRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -33,7 +37,10 @@ public class ProjectService {
     public ProjectResponseDTO create(ProjectRequestDTO dto) {
 
         Profile profile = profileRepository.findById(dto.getProfileId())
-                .orElseThrow(() -> new RuntimeException("Perfil não encontrado"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Perfil não encontrado: " + dto.getProfileId()
+                        ));
 
         Project project = new Project();
 
@@ -50,7 +57,7 @@ public class ProjectService {
 
                 Technology technology = technologyRepository.findById(technologyId)
                         .orElseThrow(() ->
-                                new RuntimeException(
+                                new ResourceNotFoundException(
                                         "Tecnologia não encontrada: " + technologyId
                                 ));
 
@@ -73,6 +80,46 @@ public class ProjectService {
                 .toList();
     }
 
+    public Page<ProjectResponseDTO> findAll(
+            Long technologyId,
+            int page,
+            int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Project> projects;
+
+        if (technologyId != null) {
+
+            projects = projectRepository
+                    .findDistinctByTechnologies_Id(
+                            technologyId,
+                            pageable
+                    );
+
+        } else {
+
+            projects = projectRepository.findAll(pageable);
+        }
+
+        return projects.map(this::convertToResponse);
+    }
+
+    public ProjectResponseDTO upvote(Long projectId) {
+
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Projeto não encontrado: " + projectId
+                        ));
+
+        project.setUpvotes(project.getUpvotes() + 1);
+
+        Project savedProject = projectRepository.save(project);
+
+        return convertToResponse(savedProject);
+    }
+
     private ProjectResponseDTO convertToResponse(Project project) {
 
         List<Long> technologyIds = project.getTechnologies()
@@ -86,7 +133,9 @@ public class ProjectService {
                 project.getDescription(),
                 project.getUrl(),
                 project.getProfile().getId(),
-                technologyIds
+                technologyIds,
+                project.getAverageRating(),
+                project.getUpvotes()
         );
     }
 }
